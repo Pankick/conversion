@@ -1,0 +1,60 @@
+---
+title: "Group Project 2"
+author: "XP"
+date: "12/8/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Group Project 2
+CAPM and a multivariate model of stock returns
+
+Variables:            
+Sector portfolio excess returns (return minus the risk free rate)
+BMATRUSER:    Building materials
+INDUSUSER:    Industrials
+CNSMGUSER:    Consumer goods
+FINANUSER:    Financials
+TECNOUSER:    Technology
+MktRF:   Market return - risk free rate
+SMB:    Fama-French Small minus Big  
+HML:    Fama- French  High minus Low 
+RF:    risk free rate
+
+```{r}
+# Import Data
+library(readxl)
+returns <- read_excel("returns.xlsx", 
+    col_types = c("date", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric", "numeric"))
+colnames(returns)[12] <- "MktRF"
+```
+
+CAPM estimation
+************************************************************************************************************
+Q1. (10 points) Estimate CAPM regressions for each of the 5 portfolios and report the results. 
+             Is the CAPM rejected?
+```{r}
+lm1 <- lm("MktRF ~ BMATRUSER", data=returns)
+summary(lm1)
+
+lm2 <- lm("MktRF ~ INDUSUSER", data=returns)
+summary(lm2)
+
+lm3 <- lm("MktRF ~ CNSMGUSER", data=returns)
+summary(lm3)
+
+lm4 <- lm("MktRF ~ FINANUSER", data=returns)
+summary(lm4)
+
+lm5 <- lm("MktRF ~ TECNOUSER", data=returns)
+summary(lm5)
+```
+             
+             

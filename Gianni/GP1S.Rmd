@@ -1,0 +1,110 @@
+---
+title: "Group Project 1"
+author: "XP"
+date: "12/8/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Group Project 1 
+
+This file uses the same data on bid-ask spreads (tradecost)  and candidate determinants used in lab2 HW2.
+
+We are interested in the relation between the average bid-ask spreads on stocks and the characteristics of the corresponding companies. 
+
+The data file lab2.xls contains information for the 100 stocks in the S$\&$P 100 index. 
+
+Our variable of interest (the $Y$ variable) is the bid-ask spread (constructed as an average over the day) - or tradecost - of the
+S&P100 stocks. The explanatory, or $X$, variables are:
+
+log volatility - The log of the daily return standard deviation
+log size - The log of the size of the stock. Size is total outstanding number of shares multiplied by share price. Size is measured in thousands of dollars
+log trades - This is the log of the average number of trades per day
+log turn - This is the log of the ratio of the average number of shares traded per day (in dollars) over the number of shares outstanding (in dollars
+NumberAnalysts - This is the number of analysts following the stock
+BACKGROUND INFORMATION
+Consider the following theories of the determinants of bid-ask spreads.
+
+1. {Asymmetric information}. Stocks with greater degrees of asymmetry in information (regarding their fundamental value) tend to have wider bid-ask spreads. The number of analysts following a stock is viewed as an asymmetric information proxy. The larger it is, the lower private information, the smaller the spreads. Log turn-over is, also, seen as an asymmetric information proxy. The larger it is, the larger private information, the larger the spreads. Trading rates in excess of this proportion should be associated with informed trading.)
+
+2. {Liquidity}. Stocks that trade more frequently and have larger market capitalization (i.e., more liquid stocks) tend to have lower bid-ask spreads. The larger log trades and log size, the larger liquidity, the smaller the spreads. Log turn-over is, also, sometimes seen as a liquidity proxy. The larger it is, the larger liquidity, the smaller the spreads. 
+
+3. {Fundamental volatility}. Stocks that have a higher volatility of fundamental values tend to have larger bid-ask spreads. Higher uncertainty about the underlying stock's value implies higher potential for adverse price moves and, hence, higher inventory risk, mostly in the presence of large imbalances to offset.
+The greater the degree of asymmetric information, the wider the spreads should be as the market makers (who are not fully informed) charge a higher price when selling (raising the ask) and a lower price when buying(lowering the bid) to insulate themselves from losing money to potentially etter informed traders. We do not get to see the degree of asymmetric information between market participants but we do know the following: 
+
+1) The larger the number of analysts following a stock, the lower asymmetric information we expect to be for that stock. Analysts provide informationabout the stock, thereby uncovering its fundamental value. 
+
+2) The greater the turn-over of the stock, the higher we expect asymmetric information to be for that stock. Intuitively, the greater the turnover, the faster individuals are getting in and out of investment positions in the stock. They do this more when they believe the current price does not accurately reflect the fundamental value of the stock - that is, when they believe theypossess asymmetric (superior) information. 
+As indicated, turn-over is also viewed, by some, as a liquidity proxy.
+
+
+************************************************************************************************
+Import the data set and set up variable names
+```{r}
+library(readxl)
+lab2 <- read_excel("lab2.xls", 
+    col_names = c("tradecost", "logvolatility", "logsize", "logtrades", "logturn", "numberanalysts"))
+lab2$logtradecost <- log(lab2$tradecost)
+```
+
+
+******************************************************************************************
+Run a regression of the log of the bid-ask spread on the 5 explanatory variables.
+Q1.  Are all independent variables significant at a 1% significance level? Explain. 
+```{r}
+lm1 <- lm("logtradecost ~ logvolatility + logsize + logtrades + logturn + numberanalysts", data = lab2)
+summary(lm1)
+```
+
+
+********************************************************************************************
+
+Q2. Test the assumption that the coefficient associated with logvolatility is equal to 1. If this is the case, how would you interpret hte relation between daily volatility and bid-ask srepads?
+```{r}
+library(car)
+linearHypothesis(lm1, "logvolatility = 1")
+linearHypothesis(lm1, hypothesis.matrix = c(0, 0, 1, -1, 0, 0))
+
+help("linearHypothesis")
+```
+
+
+*********************************************************************************************
+
+Q3. Test the assumption that the coefficients associated with logsize and logtrades are equal to each other. Interpret the result.
+```{r}
+linearHypothesis(lm1, "logsize = logtrades")
+```
+
+
+*********************************************************************************************
+
+Q5. Would you exclude any variable from the regression? Explain.
+```{r}
+linearHypothesis(lm1, "numberanalysts = 0")
+```
+Answer:  We can exclude numberanalysts since its p-value is very high.
+
+**********************************************************************************************************
+
+Q6. Let us use this model to predict what the spread will look like tomorrow. 
+For prediction, use a regression which does not include the number of analysts to predict. 
+Consider a stock which has a log size of 10.5. Suppose that for this stock we expect that for the following day the log turnover will be
+-1.1, the log of the number of trades will be 7.6, and the log of the standard deviation will be -3.5. 
+Predict what the spread will be for this stock tomorrow.  (Note that since the regression is run with log spreads you
+will have to make a transformation to convert your prediction for the log spread into a prediction for the actual spread).
+```{r}
+lm2 <- lm('logtradecost ~ logvolatility + logsize + logtrades + logturn', data=lab2)
+summary(lm2)
+x <- data.frame(logvolatility = -3.5, 
+                logsize = 10.5, 
+                logtrades = 7.6, 
+                logturn = -1.1)
+y <- predict(lm2, newdata=x)
+# Transform log prediction to actual prediction
+exp(y)
+```
+

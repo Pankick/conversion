@@ -1,0 +1,45 @@
+---
+title: "Group Project 3"
+author: "XP"
+date: "12/9/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Group project 3
+Predictability of stock returns
+
+Variables:  
+  retdny:         monthly  return on the value-weighted market portfolio 
+  retdny12:     yearly  return on the value-weighted market portfolio 
+  retdny36:     3-year  return on the value-weighted market portfolio 
+  dyny :           dividend to price ratio     
+  bmny:           book-to market ratio     
+  tbill :             1-month treasury bill      
+```{r}
+# Import Data
+library(readxl)
+predict <- read_excel("C:/Users/patri/OneDrive/Study/My own/RA/R/r_tasks/Gianni/predict.xlsx", 
+    col_types = c("date", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric"))
+```
+  
+  
+  Q1. Run the regression of retdny as predicted by the first lag of dyny.
+      Is the coefficient of dyny significant?  Is the overall regression significant? 
+```{r}
+predict$dynyL1 <- c(NA, predict$dyny[-464])
+lm1 <- lm("retdny ~ dynyL1", data=predict)
+summary(lm1)
+```
+      
+Q2.  Do the residuals of this regression appear to be distributed normally, exhibit heteroskedasticity and autocorrelation? 
+```{r}
+plot(resid(lm1))
+```
+
+      
