@@ -39,7 +39,96 @@ summary(lm1)
       
 Q2.  Do the residuals of this regression appear to be distributed normally, exhibit heteroskedasticity and autocorrelation? 
 ```{r}
-plot(resid(lm1))
+plot(lm1)
+acf(resid(lm1))
 ```
 
+
+Q3. Run the regression of retdny as predicted by the first lag of bmny
+      Is the coefficient of bmny significant?  Is the overall regression significant? 
+```{r}
+predict$bmnyL1 <- c(NA, predict$bmny[-464])
+lm2 <- lm("retdny ~ bmnyL1", data=predict)
+summary(lm2)
+```
+      
+
+
+Q4. Run the regression of retdny as predicted by the first lag of dyny and bmny
+      Are the coefficients of the predicting variables significant?  
+      Is the overall regression significant?
+```{r}
+lm3 <- lm("retdny ~ dynyL1 + bmnyL1", data=predict)
+summary(lm3)
+```
+
+
+Q5. What could account for the result in Q4? 
+```{r}
+cor(predict$dyny,predict$bmny)
+```
+
+
+Q6. Run the regression of retdny as predicted by 2 lags of dyny.  
+      Are the coefficients of the predicting variables significant?  
+      Is the overall regression significant?   
+     What can explain the difference of results using 1 instead of 2 lags of dyny?
+```{r}
+predict$dynyL2 <- c(NA, NA, predict$dyny[-c(463, 464)])
+lm4 <- lm("retdny ~ dynyL1 + dynyL2", data=predict)
+summary(lm1)
+```
+```{r}
+summary(lm4)
+```
+
+```{r}
+acf(predict$dyny)
+```
+
+
+Q7. Run the regression of retdny12 as predicted by the 12th lag of dyny, check normality, heteroskedasticty and autocorrelation of residuals, and compute HAC standard errors.  
+      Has predictability increased?   
+      Is there eveidence of non-normality, heteroskedasticty and autocorrelation of residuals?  
+      What is t-stat using the HAC standard errors? Is the coefficient of dyny12 significant?
+```{r}
+predict$dynyL12 <- c(rep(NA, 12), predict$dyny[1:452])
+lm5 <- lm("retdny12 ~ dynyL12", data=predict)
+summary(lm5)
+```
+```{r}
+plot(lm5)
+acf(resid(lm5))
+```
+
+
+Q8. Run the regression of retdny36 as predicted by the 36th lag of dyny, check normality, heteroskedasticty and autocorrelation of residuals, and compute HAC standard errors.  
+      Has predictability increased?   
+      Is there eveidence of non-normality, heteroskedasticty and autocorrelation of residuals?  
+      What is t-stat using the HAC standard errors? Is the coefficient of dyny36 significant?
+```{r}
+predict$dynyL36 <- c(rep(NA, 36), predict$dyny[1:(464-36)])
+lm6 <- lm("retdny36 ~ dynyL36", data=predict)
+summary(lm6)
+```
+```{r}
+plot(lm6)
+acf(resid(lm6))
+```
+```{r}
+library(sandwich)
+vcovHAC(lm6)
+```
+```{r}
+library(lmtest)
+vcv <- vcovHAC(lm6)
+coeftest(lm6, vcv)
+```
+
+
+
+
+
+
+      
       

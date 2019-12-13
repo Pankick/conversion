@@ -41,20 +41,45 @@ CAPM estimation
 Q1. (10 points) Estimate CAPM regressions for each of the 5 portfolios and report the results. 
              Is the CAPM rejected?
 ```{r}
-lm1 <- lm("MktRF ~ BMATRUSER", data=returns)
+lm1 <- lm("BMATRUSER ~ MktRF", data=returns)
 summary(lm1)
 
-lm2 <- lm("MktRF ~ INDUSUSER", data=returns)
+lm2 <- lm("INDUSUSER ~ MktRF", data=returns)
 summary(lm2)
 
-lm3 <- lm("MktRF ~ CNSMGUSER", data=returns)
+lm3 <- lm("CNSMGUSER ~ MktRF", data=returns)
 summary(lm3)
 
-lm4 <- lm("MktRF ~ FINANUSER", data=returns)
+lm4 <- lm("FINANUSER ~ MktRF", data=returns)
 summary(lm4)
 
-lm5 <- lm("MktRF ~ TECNOUSER", data=returns)
+lm5 <- lm("TECNOUSER ~ MktRF", data=returns)
 summary(lm5)
 ```
              
-             
+*********************************************************************************************************
+Q2. (6 points) Do the residuals of the CAPM regressions appear to be distributed normally, exhibit heteroskedasticity and autocorrelation? 
+ Answer this question for INDUSUSER, FINANUSER, and TECNOUSER             
+```{r}
+plot(lm2)
+acf(resid(lm2))
+```
+ 
+```{r}
+plot(lm4)
+acf(resid(lm4))
+```
+ 
+```{r}
+plot(lm5)
+acf(resid(lm5))
+```
+ 
+*********************************************************************************************************
+Q3. (6 points) Compute the HAC standard errors for the CAPM regressions of INDUSUSER, FINANUSER, and TECNOUSER.
+ Are they different from the OLS standard errors?
+```{r}
+
+```
+ 
+ 
